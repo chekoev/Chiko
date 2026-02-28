@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>mikro_15 — Подбери свою модель</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Outfit:wght@400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0b10;color:#fff;font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+.logo-bar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:12px 16px;background:rgba(10,11,16,0.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.05)}
+.logo-bar img{height:28px}
+.container{max-width:420px;margin:0 auto;padding:72px 20px 40px}
+.progress{width:100%;height:4px;background:rgba(255,255,255,0.06);border-radius:4px;margin-bottom:32px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#f97316,#fb923c);border-radius:4px;transition:width 0.5s ease}
+.step{display:none;animation:fadeUp 0.4s ease}
+.step.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.q-num{font-size:12px;color:#f97316;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.q-text{font-family:'Unbounded';font-size:20px;font-weight:700;line-height:1.3;margin-bottom:24px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{padding:16px 18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:12px;-webkit-tap-highlight-color:transparent}
+.opt:hover,.opt:active{background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.3)}
+.opt-icon{font-size:20px;flex-shrink:0}
+.opt-text{font-size:15px;font-weight:600}
+.opt-sub{font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 0;margin-bottom:16px;background:none;border:none;color:rgba(255,255,255,0.45);font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color 0.2s}
+.back-btn:hover,.back-btn:active{color:rgba(255,255,255,0.7)}
+.back-btn svg{width:18px;height:18px}
+.result{display:none;text-align:center;animation:fadeUp 0.5s ease}
+.result.active{display:block}
+.result-badge{display:inline-block;padding:6px 16px;background:rgba(249,115,22,0.15);border:1px solid rgba(249,115,22,0.3);border-radius:20px;font-size:12px;font-weight:700;color:#f97316;margin-bottom:16px;letter-spacing:1px}
+.result-model{font-family:'Unbounded';font-size:24px;font-weight:900;margin-bottom:8px}
+.result-desc{font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:20px;line-height:1.5}
+.result-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:20px;text-align:left}
+.result-card .rc-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.result-card .rc-row:last-child{border:none}
+.rc-label{font-size:13px;color:rgba(255,255,255,0.4)}
+.rc-val{font-size:14px;font-weight:700}
+.price-row{display:flex;gap:12px;margin-bottom:20px}
+.price-box{flex:1;padding:14px;border-radius:12px;text-align:center}
+.price-rent{background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.25)}
+.price-buy{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)}
+.price-label{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px}
+.price-val{font-family:'Unbounded';font-size:20px;font-weight:900}
+.price-rent .price-val{color:#f97316}
+.cta{display:block;width:100%;padding:18px;background:linear-gradient(135deg,#f97316,#ea580c);border:none;border-radius:14px;color:#fff;font-family:'Outfit';font-size:16px;font-weight:800;cursor:pointer;text-decoration:none;text-align:center;transition:transform 0.15s;letter-spacing:0.5px}
+.cta:active{transform:scale(0.97)}
+.cta-whatsapp{display:block;width:100%;padding:18px;background:linear-gradient(135deg,#25d366,#128c7e);border:none;border-radius:14px;color:#fff;font-family:'Outfit';font-size:16px;font-weight:800;cursor:pointer;text-decoration:none;text-align:center;transition:transform 0.15s;letter-spacing:0.5px;margin-top:10px}
+.cta-whatsapp:active{transform:scale(0.97)}
+.cta-materials{display:block;width:100%;padding:14px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:14px;color:rgba(255,255,255,0.5);font-family:'Outfit';font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;text-align:center;margin-top:10px;transition:all 0.2s}
+.cta-materials:hover,.cta-materials:active{border-color:rgba(249,115,22,0.3);color:rgba(255,255,255,0.7)}
+.discount{background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.25);border-radius:12px;padding:14px;margin-bottom:20px;text-align:center;font-size:14px;font-weight:700;color:#f97316}
+.foot{text-align:center;margin-top:24px;font-size:11px;color:rgba(255,255,255,0.2);line-height:1.5}
+.step-foot{text-align:center;margin-top:32px;font-size:11px;color:rgba(255,255,255,0.15);line-height:1.5;border-top:1px solid rgba(255,255,255,0.04);padding-top:20px}
+</style>
+</head>
+<body>
+
+<div class="logo-bar">
+  <img src="logo.jpeg" alt="mikro_15">
+</div>
+
+<div class="container">
+  <div class="progress"><div class="progress-fill" id="pbar" style="width:0%"></div></div>
+
+  <!-- Q1: Exam type -->
+  <div class="step active" id="s1">
+    <div class="q-num">Вопрос 1 из 6</div>
+    <div class="q-text">Какой экзамен предстоит?</div>
+    <div class="opts">
+      <div class="opt" onclick="answer(1,'ege')"><span class="opt-icon">📝</span><div><div class="opt-text">ЕГЭ</div></div></div>
+      <div class="opt" onclick="answer(1,'session')"><span class="opt-icon">🎓</span><div><div class="opt-text">Сессия в вузе</div></div></div>
+      <div class="opt" onclick="answer(1,'oge')"><span class="opt-icon">📖</span><div><div class="opt-text">ОГЭ / 9 класс</div></div></div>
+      <div class="opt" onclick="answer(1,'other')"><span class="opt-icon">🎤</span><div><div class="opt-text">Выступление / интервью / другое</div></div></div>
+    </div>
+    <div class="step-foot">mikro_15 — работаем с 2006 года<br>Более 7 000 довольных клиентов<br>Владикавказ, Куйбышева 15, 3 этаж</div>
+  </div>
+
+  <!-- Q2: Jammers -->
+  <div class="step" id="s2">
+    <button class="back-btn" onclick="goBack(2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Назад</button>
+    <div class="q-num">Вопрос 2 из 6</div>
+    <div class="q-text">Будут ли глушилки связи на экзамене?</div>
+    <div class="opts">
+      <div class="opt" onclick="answer(2,'yes')"><span class="opt-icon">🔇</span><div><div class="opt-text">Да, точно будут</div><div class="opt-sub">Есть модели на радиосигнале</div></div></div>
+      <div class="opt" onclick="answer(2,'maybe')"><span class="opt-icon">🤷</span><div><div class="opt-text">Возможно / не знаю</div><div class="opt-sub">Лучше перестраховаться</div></div></div>
+      <div class="opt" onclick="answer(2,'no')"><span class="opt-icon">✅</span><div><div class="opt-text">Нет, не будет</div><div class="opt-sub">Подойдет любая модель</div></div></div>
+    </div>
+    <div class="step-foot">mikro_15 — работаем с 2006 года<br>Более 7 000 довольных клиентов<br>Владикавказ, Куйбышева 15, 3 этаж</div>
+  </div>
+
+  <!-- Q2-info: Radio signal explanation -->
+  <div class="step" id="s2info">
+    <button class="back-btn" onclick="goBackFromInfo()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Назад</button>
+    <div style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);border-radius:14px;padding:18px;margin-bottom:20px">
+      <div style="font-size:13px;font-weight:700;color:#f97316;margin-bottom:8px">📡 ВАЖНО ЗНАТЬ О ГЛУШИЛКАХ</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.65);line-height:1.6">
+        У нас есть наушники на <span style="color:#fff;font-weight:700">радиосигнале</span>, которые не глушатся обычными сотовыми глушилками. Они работают на другой частоте и не зависят от мобильной связи или Bluetooth.
+        <br><br>
+        Это модели 7-10 в нашей линейке. Для подробной консультации по вашей ситуации напишите нам в Telegram:
+      </div>
+      <a href="https://t.me/mikro_15" style="display:block;margin-top:14px;padding:14px;background:rgba(249,115,22,0.15);border:1px solid rgba(249,115,22,0.3);border-radius:10px;text-align:center;color:#f97316;font-weight:700;font-size:14px;text-decoration:none">Консультация в @mikro_15</a>
+    </div>
+    <div class="q-text" style="font-size:16px;margin-bottom:16px">Продолжить подбор модели?</div>
+    <div class="opts">
+      <div class="opt" onclick="continueFromInfo()"><span class="opt-icon">👉</span><div><div class="opt-text">Да, продолжить подбор</div></div></div>
+    </div>
+    <div class="step-foot">mikro_15 — работаем с 2006 года<br>Более 7 000 довольных клиентов<br>Владикавказ, Куйбышева 15, 3 этаж</div>
+  </div>
+
+  <!-- Q3: Rent or Buy -->
+  <div class="step" id="s3">
+    <button class="back-btn" onclick="goBack(3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Назад</button>
+    <div class="q-num">Вопрос 3 из 6</div>
+    <div class="q-text">Аренда или покупка?</div>
+    <div class="opts">
+      <div class="opt" onclick="answer(3,'rent')"><span class="opt-icon">🔄</span><div><div class="opt-text">Аренда на сутки</div><div class="opt-sub">От 1 900 руб / сутки</div></div></div>
+      <div class="opt" onclick="answer(3,'buy')"><span class="opt-icon">💎</span><div><div class="opt-text">Покупка навсегда</div><div class="opt-sub">От 9 900 руб</div></div></div>
+      <div class="opt" onclick="answer(3,'unsure')"><span class="opt-icon">💬</span><div><div class="opt-text">Посоветуйте</div></div></div>
+    </div>
+    <div class="step-foot">mikro_15 — работаем с 2006 года<br>Более 7 000 довольных клиентов<br>Владикавказ, Куйбышева 15, 3 этаж</div>
+  </div>
+
+  <!-- Q4: Budget -->
+  <div class="step" id="s4">
+    <button class="back-btn" onclick="goBack(4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Назад</button>
+    <div class="q-num">Вопрос 4 из 6</div>
+    <div class="q-text">Какой бюджет вы рассматриваете?</div>
+    <div class="opts" id="q4opts"></div>
+    <div class="step-foot">mikro_15 — работаем с 2006 года<br>Более 7 000 довольных клиентов<br>Владикавказ, Куйбышева 15, 3 этаж</div>
+  </div>
+
+  <!-- Q5: Reliability -->
+  <div class="step" id="s5">
+    <button class="back-btn" onclick="goBack(5)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Назад</button>
+    <div class="q-num">Вопрос 5 из 6</div>
+    <div class="q-text">Насколько важна мощность и надежность?</div>
+    <div class="opts">
+      <div class="opt" onclick="answer(5,'basic')"><span class="opt-icon">👌</span><div><div class="opt-text">Обычная, главное недорого</div><div class="opt-sub">Базовые модели</div></div></div>
+      <div class="opt" onclick="answer(5,'strong')"><span class="opt-icon">💪</span><div><div class="opt-text">Нужна сильная и стабильная</div><div class="opt-sub">Топовые модели — рекомендуем</div></div></div>
+      <div class="opt" onclick="answer(5,'max')"><span class="opt-icon">🔥</span><div><div class="opt-text">Максимум! Лучшее что есть</div><div class="opt-sub">Флагманы 2026 года</div></div></div>
+    </div>
+    <div class="step-foot">mikro_15 — работаем с 2006 года<br>Более 7 000 довольных клиентов<br>Владикавказ, Куйбышева 15, 3 этаж</div>
+  </div>
+
+  <!-- Q6: City -->
+  <div class="step" id="s6">
+    <button class="back-btn" onclick="goBack(6)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Назад</button>
+    <div class="q-num">Вопрос 6 из 6</div>
+    <div class="q-text">Ваш город?</div>
+    <div class="opts">
+      <div class="opt" onclick="answer(6,'vladikavkaz')"><span class="opt-icon">📍</span><div><div class="opt-text">Владикавказ</div><div class="opt-sub">Самовывоз бесплатно</div></div></div>
+      <div class="opt" onclick="answer(6,'nalchik')"><span class="opt-icon">🚚</span><div><div class="opt-text">Нальчик</div></div></div>
+      <div class="opt" onclick="answer(6,'grozny')"><span class="opt-icon">🚚</span><div><div class="opt-text">Грозный</div></div></div>
+      <div class="opt" onclick="answer(6,'nazran')"><span class="opt-icon">🚚</span><div><div class="opt-text">Назрань / Магас</div></div></div>
+      <div class="opt" onclick="answer(6,'pyatigorsk')"><span class="opt-icon">🚚</span><div><div class="opt-text">Пятигорск / Ставрополь</div></div></div>
+      <div class="opt" onclick="answer(6,'other')"><span class="opt-icon">🌍</span><div><div class="opt-text">Другой город</div></div></div>
+    </div>
+    <div class="step-foot">mikro_15 — работаем с 2006 года<br>Более 7 000 довольных клиентов<br>Владикавказ, Куйбышева 15, 3 этаж</div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result" id="result">
+    <div class="result-badge">ВАША РЕКОМЕНДАЦИЯ</div>
+    <div class="result-model" id="r-name"></div>
+    <div class="result-desc" id="r-desc"></div>
+    <div class="result-card">
+      <div class="rc-row"><span class="rc-label">Мощность</span><span class="rc-val" id="r-power"></span></div>
+      <div class="rc-row"><span class="rc-label">Особенности</span><span class="rc-val" id="r-feat"></span></div>
+      <div class="rc-row"><span class="rc-label">Глушит конкурентов</span><span class="rc-val" id="r-jam"></span></div>
+    </div>
+    <div class="price-row">
+      <div class="price-box price-rent"><div class="price-label">Аренда / сутки</div><div class="price-val" id="r-rent"></div></div>
+      <div class="price-box price-buy"><div class="price-label">Покупка</div><div class="price-val" id="r-buy"></div></div>
+    </div>
+    <div class="discount">Аналогов нашим микронаушникам нет!</div>
+    <a class="cta" id="r-cta" href="https://t.me/mikro_15">Написать в Telegram</a>
+    <a class="cta-whatsapp" href="https://wa.me/79188215557">Написать в WhatsApp</a>
+    <a class="cta-materials" href="https://t.me/mikro_15info">Получить полезные материалы</a>
+    <div class="foot">mikro_15 — работаем с 2006 года<br>Более 7 000 довольных клиентов<br>Владикавказ, Куйбышева 15, 3 этаж</div>
+  </div>
+</div>
+
+<script>
+const A = {};
+const TOTAL = 6;
+
+const MODELS = {
+  plat:       { name:"Plat", num:1, power:"1/10", rent:"1 900", buy:"9 900", feat:"Базовая", jam:"Нет", desc:"Начальная модель. Для простых задач без глушилок." },
+  silver:     { name:"Silver", num:2, power:"2/10", rent:"2 200", buy:"11 500", feat:"Базовая", jam:"Нет", desc:"Чуть мощнее Plat. Для сессий без глушилок." },
+  plat_mini:  { name:"Plat mini", num:3, power:"3/10", rent:"2 200", buy:"12 500", feat:"Компактная", jam:"Нет", desc:"Компактная версия. Для сессий без глушилок." },
+  silver_mini:{ name:"Silver mini", num:4, power:"4/10", rent:"2 700", buy:"13 800", feat:"Компактная", jam:"Нет", desc:"Мощнее Plat mini. Хороший баланс." },
+  flash:      { name:"Flash", num:5, power:"5/10", rent:"3 900", buy:"15 900", feat:"Средняя мощность", jam:"Нет", desc:"Средний сегмент. Стабильная работа." },
+  flash_mini: { name:"Flash mini", num:6, power:"5/10", rent:"4 800", buy:"18 500", feat:"Компакт + мощность", jam:"Нет", desc:"Компактная и мощная. Для серьёзных экзаменов." },
+  flash77:    { name:"Flash 77", num:7, power:"8/10", rent:"6 500", buy:"26 000", feat:"Высокая мощность", jam:"Да, в радиусе 5м", desc:"Высокая мощность. Глушит конкурентов в радиусе 5 метров. Рекомендуем для ЕГЭ." },
+  nano7:      { name:"Nano 7", num:8, power:"9/10", rent:"8 000", buy:"32 000", feat:"Топ-выбор, стабильная", jam:"Да, в радиусе 5м", desc:"Сильная мощность и стабильная работа. Оптимальный выбор. Выбор большинства клиентов." },
+  flash2026:  { name:"Flash новинка 2026", num:9, power:"10/10", rent:"10 000", buy:"39 700", feat:"Флагман, максимум", jam:"Да, в радиусе 5м", desc:"Максимальная мощность. Лучшее соотношение функций и цены. Флагман 2026 года." },
+  flash_mag:  { name:"Flash новинка Магнит 2026", num:10, power:"10/10", rent:"11 000", buy:"42 500", feat:"Абсолютный максимум", jam:"Да, в радиусе 5м", desc:"Магнит-версия флагмана. Абсолютный максимум мощности на рынке." },
+};
+
+// Track if we came through info screen
+let cameFromInfo = false;
+
+function answer(q, val) {
+  A[q] = val;
+  
+  if (q === 3) {
+    buildQ4();
+  }
+  
+  if (q === 2 && (val === 'yes' || val === 'maybe')) {
+    cameFromInfo = true;
+    document.getElementById('s2').classList.remove('active');
+    document.getElementById('s2info').classList.add('active');
+    document.getElementById('pbar').style.width = (2/TOTAL*100)+'%';
+    return;
+  }
+  
+  if (q === 2) {
+    cameFromInfo = false;
+  }
+  
+  if (q < TOTAL) {
+    document.getElementById('s'+q).classList.remove('active');
+    document.getElementById('s'+(q+1)).classList.add('active');
+    document.getElementById('pbar').style.width = (q/TOTAL*100)+'%';
+  } else {
+    document.getElementById('s'+q).classList.remove('active');
+    document.getElementById('pbar').style.width = '100%';
+    showResult();
+  }
+}
+
+function continueFromInfo() {
+  document.getElementById('s2info').classList.remove('active');
+  document.getElementById('s3').classList.add('active');
+  document.getElementById('pbar').style.width = (2/TOTAL*100)+'%';
+}
+
+function goBack(currentStep) {
+  document.getElementById('s'+currentStep).classList.remove('active');
+  
+  if (currentStep === 3 && cameFromInfo) {
+    document.getElementById('s2info').classList.add('active');
+    document.getElementById('pbar').style.width = (1/TOTAL*100)+'%';
+    return;
+  }
+  
+  var prevStep = currentStep - 1;
+  document.getElementById('s'+prevStep).classList.add('active');
+  document.getElementById('pbar').style.width = ((prevStep-1)/TOTAL*100)+'%';
+}
+
+function goBackFromInfo() {
+  document.getElementById('s2info').classList.remove('active');
+  document.getElementById('s2').classList.add('active');
+  document.getElementById('pbar').style.width = (1/TOTAL*100)+'%';
+}
+
+function buildQ4() {
+  const el = document.getElementById('q4opts');
+  if (A[3] === 'buy') {
+    el.innerHTML = `
+      <div class="opt" onclick="answer(4,'low')"><span class="opt-icon">💰</span><div><div class="opt-text">До 15 000 руб</div><div class="opt-sub">Модели 1-5</div></div></div>
+      <div class="opt" onclick="answer(4,'mid')"><span class="opt-icon">💰💰</span><div><div class="opt-text">15 000 — 30 000 руб</div><div class="opt-sub">Модели 6-7 — отличный выбор</div></div></div>
+      <div class="opt" onclick="answer(4,'high')"><span class="opt-icon">💰💰💰</span><div><div class="opt-text">30 000 — 40 000 руб</div><div class="opt-sub">Модели 8-9 — топ продаж</div></div></div>
+      <div class="opt" onclick="answer(4,'max')"><span class="opt-icon">👑</span><div><div class="opt-text">Не ограничен — дайте лучшее</div><div class="opt-sub">Модели 9-10 — максимум</div></div></div>
+    `;
+  } else {
+    el.innerHTML = `
+      <div class="opt" onclick="answer(4,'low')"><span class="opt-icon">💰</span><div><div class="opt-text">До 3 000 руб / сутки</div><div class="opt-sub">Модели 1-4</div></div></div>
+      <div class="opt" onclick="answer(4,'mid')"><span class="opt-icon">💰💰</span><div><div class="opt-text">3 000 — 6 000 руб / сутки</div><div class="opt-sub">Модели 5-6</div></div></div>
+      <div class="opt" onclick="answer(4,'high')"><span class="opt-icon">💰💰💰</span><div><div class="opt-text">6 000 — 9 000 руб / сутки</div><div class="opt-sub">Модели 7-8 — топ продаж</div></div></div>
+      <div class="opt" onclick="answer(4,'max')"><span class="opt-icon">👑</span><div><div class="opt-text">Не важно — дайте лучшее</div><div class="opt-sub">Модели 9-10 — максимум</div></div></div>
+    `;
+  }
+}
+
+function selectModel() {
+  const exam = A[1];
+  const jammer = A[2];
+  const budget = A[4];
+  const reliability = A[5];
+  
+  if (reliability === 'max') {
+    return budget === 'max' ? MODELS.flash_mag : MODELS.flash2026;
+  }
+  
+  if (reliability === 'strong') {
+    if (budget === 'max' || budget === 'high') return MODELS.nano7;
+    return MODELS.flash77;
+  }
+  
+  if (jammer === 'yes') {
+    if (budget === 'max') return MODELS.flash2026;
+    if (budget === 'high') return MODELS.nano7;
+    return MODELS.flash77;
+  }
+  
+  if (jammer === 'maybe') {
+    if (budget === 'max') return MODELS.flash2026;
+    if (budget === 'high') return MODELS.nano7;
+    if (budget === 'mid') return MODELS.flash77;
+    return MODELS.flash_mini;
+  }
+  
+  if (exam === 'ege') {
+    if (budget === 'max') return MODELS.flash2026;
+    if (budget === 'high') return MODELS.nano7;
+    if (budget === 'mid') return MODELS.flash77;
+    return MODELS.flash;
+  }
+  
+  if (budget === 'max') return MODELS.flash2026;
+  if (budget === 'high') return MODELS.nano7;
+  if (budget === 'mid') return MODELS.flash77;
+  if (budget === 'low') return MODELS.silver_mini;
+  
+  return MODELS.nano7;
+}
+
+function showResult() {
+  const m = selectModel();
+  document.getElementById('r-name').textContent = m.name;
+  document.getElementById('r-desc').textContent = m.desc;
+  document.getElementById('r-power').textContent = m.power;
+  document.getElementById('r-feat').textContent = m.feat;
+  document.getElementById('r-jam').textContent = m.jam;
+  document.getElementById('r-rent').textContent = m.rent + ' ₽';
+  document.getElementById('r-buy').textContent = m.buy + ' ₽';
+  document.getElementById('result').classList.add('active');
+}
+</script>
+</body>
+</html>
